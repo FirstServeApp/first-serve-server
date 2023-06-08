@@ -44,6 +44,10 @@ app.get('/', (req, res) => {
   res.send('firstServe server')
 })
 
+app.get('/health', (req, res) => {
+  res.json({ success: true })
+})
+
 app.use(errorMiddleware)
 
 const start = () => {
