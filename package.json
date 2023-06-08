@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "build": "rimraf ./dist && npx tsc",
-    "start": "npm run build && node dist/index.js",
+    "build:prod": "npx tsc",
+    "start": "npm run build && node ./dist/index.js",
+    "start:prod": "npm run build:prod && node ./dist/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
     "lint": "eslint ./src",
     "format": "eslint ./src --fix",
