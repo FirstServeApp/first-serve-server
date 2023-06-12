@@ -68,11 +68,15 @@ const getCurrentUser = async (user: IUserDto) => {
   const userData = await UserModel.findById(user._id).exec()
   const socialUserData = await SocialUserModel.findById(user._id).exec()
 
-  if (!userData || !socialUserData) {
-    throw ApiError.NotFound('User not found')
+  if (socialUserData) {
+    return new UserDto(socialUserData)
   }
 
-  return new UserDto(userData || socialUserData)
+  if (userData) {
+    return new UserDto(userData)
+  }
+
+  throw ApiError.NotFound('User not found')
 }
 
 const changeUserName = async (name: string, userId: Schema.Types.ObjectId) => {
