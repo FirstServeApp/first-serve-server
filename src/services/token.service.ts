@@ -18,7 +18,7 @@ export const generateTokens = async (user: IUser | ISocialUser, session?: any): 
     const refreshSecret = getEnv('JWT_REFRESH_SECRET')
 
     const payload = { ...new UserDto(user) }
-    const accessToken = await jwt.sign(payload, accessSecret, { expiresIn: '15m' })
+    const accessToken = await jwt.sign(payload, accessSecret, { expiresIn: '30s' })
     const refreshToken = await jwt.sign(payload, refreshSecret, { expiresIn: '30d' })
 
     const tokenData = await TokenModel.findOne({ user_id: user._id })
