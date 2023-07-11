@@ -44,12 +44,12 @@ const changeProfileImageController = async (
       return next(ApiError.Unauthorized())
     }
 
-    const { file } = req
-    if (!file) {
+    const { image } = req.body
+    if (!image) {
       return next(ApiError.BadRequest('Image file not found in the request or field name is incorrect.'))
     }
 
-    const imageUrl = await changeProfileImage(req.user._id, file.path)
+    const imageUrl = await changeProfileImage(req.user._id, image)
 
     return res.json({ imageUrl })
   } catch (e) {

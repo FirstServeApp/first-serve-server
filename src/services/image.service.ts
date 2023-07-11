@@ -16,6 +16,7 @@ export const storage = new CloudinaryStorage({
 
 const uploadImage = async (image: any, publicId?: string) => {
   const result = await cloudinary.uploader.upload(image, {
+    folder: 'avatars',
     public_id: publicId,
     overwrite: true,
     invalidate: true,

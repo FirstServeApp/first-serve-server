@@ -10,13 +10,13 @@ const uploadController = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { file } = req
+  const { image } = req.body
   try {
-    if (!file) {
+    if (!image) {
       return next(ApiError.BadRequest('Image file not found in the request or field name is incorrect.'))
     }
 
-    const result = await uploadImage(file.path)
+    const result = await uploadImage(image)
 
     return res.json(result)
   } catch (e) {

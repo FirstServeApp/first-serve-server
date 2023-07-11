@@ -7,8 +7,6 @@ import helmet from 'helmet'
 import morgan from 'morgan'
 import mongoSanitize from 'express-mongo-sanitize'
 import logger from './services/logger.service.js'
-import swaggerUi from 'swagger-ui-express'
-import swaggerDocs from './utils/swagger.utils.js'
 
 import errorMiddleware from './middlewares/error.middleware.js'
 
@@ -38,7 +36,6 @@ app.use('/auth', authRouter)
 app.use('/user', userRouter)
 app.use('/match', matchRouter)
 app.use('/image', imageRouter)
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
 app.get('/', (req, res) => {
   res.send('firstServe server')
