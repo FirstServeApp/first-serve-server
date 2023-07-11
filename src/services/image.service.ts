@@ -35,7 +35,7 @@ const uploadImage = async (image: any, publicId?: string) => {
 const deleteImage = async (url: string) => {
   const publicId = getCloudinaryPublicId(url)
 
-  await cloudinary.uploader.destroy(publicId)
+  await cloudinary.uploader.destroy(`avatars/${publicId}`)
 }
 
 export {
