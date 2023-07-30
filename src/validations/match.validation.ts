@@ -50,32 +50,7 @@ export const validateCreateMatchBody = matchValidator.body(Joi.object({
           'any.required': 'opponentScore is required',
           'number.base': 'opponentScore should be a number',
         }),
-      myServes: Joi
-        .array()
-        .items(Joi.string().valid('Ace', 'Winner', 'Forced Error', 'Unforced Error'))
-        .min(1)
-        .required()
-        .messages({
-          'any.required': 'myServes is required',
-          'array.base': 'myServes type should be an array',
-          'array.min': 'myServes must include at least 1 serve',
-          'string.base': 'serve type should be a string',
-          'any.only':
-            'serve value should be one of Ace, Winner, Forced Error, Unforced Error',
-        }),
-      opponentServes: Joi
-        .array()
-        .items(Joi.string().valid('Ace', 'Winner', 'Forced Error', 'Unforced Error'))
-        .min(1)
-        .required()
-        .messages({
-          'any.required': 'opponentServes is required',
-          'array.base': 'opponentServes type should be an array',
-          'array.min': 'opponentServes must include at least 1 serve',
-          'string.base': 'serve type should be a string',
-          'any.only':
-            'serve value should be one of Ace, Winner, Forced Error, Unforced Error',
-        }),
+      games: Joi.array().required(),
     }))
     .min(1)
     .max(3)
