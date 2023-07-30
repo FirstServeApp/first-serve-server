@@ -46,6 +46,8 @@ const SetSchema = new Schema<ISet>({
     index: { type: Number, required: true },
     duration: { type: Number, required: true },
     server: { type: String, required: true },
+    myScore: { type: Number, required: true },
+    opponentScore: { type: Number, required: true },
     history: [{
       myScore: { type: Number, required: true },
       opponentScore: { type: Number, required: true },
