@@ -6,6 +6,7 @@ import {
   getMatchesByUserController,
   getMatchesByDateController,
   getMatchesByPlayersController,
+  getMatchDetailsController,
 } from '../controllers/match.controller.js'
 import {
   validateCreateMatchBody,
@@ -25,5 +26,6 @@ router.get('/filter/date', checkAuth, validateDateFilterQuery, getMatchesByDateC
 router.get('/filter/players', checkAuth, validatePlayersFilterQuery, getMatchesByPlayersController)
 router.get('/:id', checkAuth, validateRequestParamId, isAuthor, getMatchController)
 router.delete('/:id', checkAuth, validateRequestParamId, isAuthor, deleteMatchController)
+router.get('/details/:id', checkAuth, validateRequestParamId, getMatchDetailsController)
 
 export default router

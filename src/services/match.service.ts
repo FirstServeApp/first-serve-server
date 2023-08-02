@@ -1,6 +1,8 @@
 import { MatchModel, SetModel, ISet, IMatch } from '../models/match.model.js'
 import { Schema, startSession } from 'mongoose'
 import { ApiError } from '../middlewares/error.middleware.js'
+import { getBreakPointsStat, getGamesStat, getServesPoints, getServesStat, getStat,
+  getTotalReturnWon, getTotalServiceWon, getTotalWon } from '../utils/match.utils.js'
 
 export type CreateMatchReq = {
   user_id: Schema.Types.ObjectId;
@@ -63,7 +65,7 @@ const getMatchesByUser = async (userId: Schema.Types.ObjectId, skip: number, lim
     .skip(skip)
     .limit(limit)
     .sort({ createdAt: -1 })
-    .populate('sets', '-_id -__v -myServes -opponentServes')
+    .populate('sets', '-_id -__v -games')
     .exec()
 
   return matches
@@ -138,6 +140,47 @@ const getMatchesByPlayers = async (
   return matches
 }
 
+const getDetailsByMatch = async (id: string) => {
+  const match = await getMatchById(id as unknown as Schema.Types.ObjectId)
+  const sets = match.sets as unknown as ISet[]
+
+  const aces = getStat(sets, 'Ace')
+  const doubleFaults = getStat(sets, 'Double fault')
+  const winners = getStat(sets, 'Winner')
+  const forcedErrors = getStat(sets, 'Forced error')
+  const unforcedErrors = getStat(sets, 'Unforced error')
+  const totalWon = getTotalWon(sets)
+  const totalServiceWon = getTotalServiceWon(sets)
+  const totalReturnWon = getTotalReturnWon(sets)
+  const firstServes = getServesStat(sets, '1')
+  const secondServes = getServesStat(sets, '2')
+  const firstServePointsWon = getServesPoints(sets, '1')
+  const secondServePointsWon = getServesPoints(sets, '2')
+  const breakPointsSaved = getBreakPointsStat(sets, 'saved')
+  const breakPointsWon = getBreakPointsStat(sets, 'won')
+  const serviceGames = getGamesStat(sets, 'service')
+  const returnGames = getGamesStat(sets, 'return')
+
+  return {
+    aces,
+    doubleFaults,
+    winners,
+    forcedErrors,
+    unforcedErrors,
+    totalWon,
+    totalServiceWon,
+    totalReturnWon,
+    firstServes,
+    secondServes,
+    firstServePointsWon,
+    secondServePointsWon,
+    breakPointsSaved,
+    breakPointsWon,
+    serviceGames,
+    returnGames,
+  }
+}
+
 export {
   createMatch,
   getMatchById,
@@ -145,4 +188,5 @@ export {
   getMatchesByUser,
   getMatchesByDate,
   getMatchesByPlayers,
+  getDetailsByMatch,
 }

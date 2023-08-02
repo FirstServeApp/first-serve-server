@@ -40,8 +40,6 @@ const SetSchema = new Schema<ISet>({
   index: { type: Number, required: true },
   myScore: { type: Number, required: true },
   opponentScore: { type: Number, required: true },
-  // myServes: [{ type: String, enum: SetServesEnum, required: true }],
-  // opponentServes: [{ type: String, enum: SetServesEnum, required: true }],
   games: [{
     index: { type: Number, required: true },
     duration: { type: Number, required: true },
