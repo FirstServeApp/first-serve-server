@@ -181,6 +181,15 @@ const getDetailsByMatch = async (id: string) => {
   }
 }
 
+const changeOpponentName = async (id: string, opponentName: string) => {
+  const match = await MatchModel.findByIdAndUpdate(id, { opponentName }, { new: true }).exec()
+  if (!match) {
+    throw ApiError.NotFound('No match found with this id')
+  }
+
+  return match
+}
+
 export {
   createMatch,
   getMatchById,
@@ -189,4 +198,5 @@ export {
   getMatchesByDate,
   getMatchesByPlayers,
   getDetailsByMatch,
+  changeOpponentName,
 }

@@ -1,5 +1,5 @@
 import JoiValidation from 'express-joi-validation'
-import { Response, NextFunction, Request } from 'express'
+import { Response, NextFunction } from 'express'
 import {
   createMatch,
   getMatchById,
@@ -8,6 +8,7 @@ import {
   getMatchesByDate,
   getMatchesByPlayers,
   getDetailsByMatch,
+  changeOpponentName,
 } from '../services/match.service.js'
 import {
   MatchRequestSchema,
@@ -15,6 +16,7 @@ import {
   DateFilterSchema,
   PlayersFilterSchema,
   PaginationQueryScema,
+  ChangeOpponentNameSchema,
 } from '../validations/match.validation.js'
 import { IUserDto } from '../dtos/user.dto.js'
 import { getDatesFromQuery, getPaginationDataFromQuery, getPlayersFromQuery } from '../utils/query.utils.js'
@@ -131,6 +133,23 @@ const getMatchDetailsController = async (
   }
 }
 
+const changeOpponentNameController = async (
+  req: JoiValidation.ValidatedRequest<ChangeOpponentNameSchema>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { opponentName } = req.body
+    const { id } = req.params
+
+    const data = await changeOpponentName(id, opponentName)
+
+    return res.json(data)
+  } catch (e) {
+    next(e)
+  }
+}
+
 export {
   createMatchController,
   getMatchController,
@@ -139,4 +158,5 @@ export {
   getMatchesByDateController,
   getMatchesByPlayersController,
   getMatchDetailsController,
+  changeOpponentNameController,
 }

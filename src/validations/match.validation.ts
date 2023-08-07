@@ -195,3 +195,17 @@ export const validatePlayersFilterQuery = matchValidator.query(Joi.object({
       'number.max': 'Page size cannot be greater than 50',
     }),
 }))
+
+export interface ChangeOpponentNameSchema extends JoiValidation.ValidatedRequestSchema {
+  [JoiValidation.ContainerTypes.Body]: {
+    opponentName: string;
+  },
+}
+
+export const validateChangeOpponentNameSchema = matchValidator.body(Joi.object({
+  opponentName: Joi
+    .string()
+    .trim()
+    .required()
+    .messages({ 'any.required': 'opponentName is required' }),
+}))
