@@ -4,18 +4,36 @@ const getHistoryByPlayer = (games: IGame[], player: 'ME' | 'OPPONENT') => {
   return games.filter((game) => game.server === player).flatMap((item) => item.history)
 }
 
-const getBreakPoint = (games: IGame[], player: 'ME' | 'OPPONENT', type: 'saved' | 'won') => {
-  return games
-    .filter((game) => game.server === player)
-    .flatMap((item) => item.history)
-    .filter((item) => item.server === player)
-    .filter((item) => {
-      if (type === 'saved') {
-        return item.myScore < item.opponentScore
-      } else {
-        return item.myScore > item.opponentScore
-      }
-    })
+const getBreakPoints = (games: IGame[], player: 'ME' | 'OPPONENT') => {
+  let total = 0
+  let count = 0
+  games.map(game => {
+    const isOpponentWin = game.opponentScore > game.myScore
+    const gameBreakPoints = game.history
+      .map(item => {
+        if (player === 'ME' && item.myScore >= 30 && item.opponentScore <= 15) {
+          total += 1
+          return 1
+        } else if (player === 'ME' && item.myScore === 40 && item.opponentScore >= 40) {
+          total += 1
+          return 1
+        } else if (player === 'OPPONENT' && item.opponentScore >= 30 && item.myScore <= 15) {
+          total += 1
+          return 1
+        } else if (player === 'OPPONENT' && item.opponentScore === 40 && item.myScore >= 40) {
+          total += 1
+          return 1
+        }
+      })
+
+    if (player === 'OPPONENT' && isOpponentWin && game.server === 'ME' && gameBreakPoints.length > 0) {
+      count +=1
+    } else if (player === 'ME' && !isOpponentWin && game.server === 'OPPONENT' && gameBreakPoints.length > 0) {
+      count += 1
+    }
+  })
+
+  return { total, count }
 }
 
 type StatType = 'Ace' | 'Winner' | 'Forced error'
@@ -205,20 +223,26 @@ export const getServesPoints = (sets: ISet[], serveType: '1' | '2') => {
   }
 }
 
-export const getBreakPointsStat = (sets: ISet[], type: 'saved' | 'won') => {
+export const getBreakPointsStat = (sets: ISet[]) => {
   const games = sets.flatMap((set) => set.games)
 
-  const myBreakPointsCount = getBreakPoint(games, 'ME', type).length
-  const opponentBreakPointsCount = getBreakPoint(games, 'OPPONENT', type).length
+  const { total: myTotal, count: myCount } = getBreakPoints(games, 'ME')
+  const { total: opponentTotal, count: opponentCount } = getBreakPoints(games, 'OPPONENT')
 
   return {
     all: {
-      me: { count: myBreakPointsCount },
-      opponent: { count: opponentBreakPointsCount },
+      me: { total: myTotal, count: myCount },
+      opponent: { total: opponentTotal, count: opponentCount },
     },
     bySet: sets.map((set) => ({
-      me: { count: getBreakPoint(set.games, 'ME', type).length },
-      opponent: { count: getBreakPoint(set.games, 'OPPONENT', type).length },
+      me: {
+        total: getBreakPoints(set.games, 'ME').total,
+        count: getBreakPoints(set.games, 'ME').count,
+      },
+      opponent: {
+        total: getBreakPoints(set.games, 'OPPONENT').total,
+        count: getBreakPoints(set.games, 'OPPONENT').count,
+      },
     })),
   }
 }

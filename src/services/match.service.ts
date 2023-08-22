@@ -156,8 +156,7 @@ const getDetailsByMatch = async (id: string) => {
   const secondServes = getServesStat(sets, '2')
   const firstServePointsWon = getServesPoints(sets, '1')
   const secondServePointsWon = getServesPoints(sets, '2')
-  const breakPointsSaved = getBreakPointsStat(sets, 'saved')
-  const breakPointsWon = getBreakPointsStat(sets, 'won')
+  const breakPointsWon = getBreakPointsStat(sets)
   const serviceGames = getGamesStat(sets, 'service')
   const returnGames = getGamesStat(sets, 'return')
   const aggressiveMargin = getAggressiveMargin(sets)
@@ -175,7 +174,6 @@ const getDetailsByMatch = async (id: string) => {
     secondServes,
     firstServePointsWon,
     secondServePointsWon,
-    breakPointsSaved,
     breakPointsWon,
     serviceGames,
     returnGames,
