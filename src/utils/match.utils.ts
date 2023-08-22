@@ -18,7 +18,8 @@ const getBreakPoint = (games: IGame[], player: 'ME' | 'OPPONENT', type: 'saved' 
     })
 }
 
-type StatType = 'Ace' | 'Double fault' | 'Winner' | 'Forced error' | 'Unforced error'
+type StatType = 'Ace' | 'Winner' | 'Forced error'
+type SpeciaStatType = 'Unforced error' | 'Double fault'
 
 export const getStat = (sets: ISet[], statType: StatType) => {
   const games = sets.flatMap((set) => set.games)
@@ -42,6 +43,33 @@ export const getStat = (sets: ISet[], statType: StatType) => {
       opponent: {
         total: getHistoryByPlayer(set.games, 'OPPONENT').length,
         count: getHistoryByPlayer(set.games, 'OPPONENT').filter((item) => item.type === statType).length,
+      },
+    })),
+  }
+}
+
+export const getSpecialStat = (sets: ISet[], statType: SpeciaStatType) => {
+  const games = sets.flatMap((set) => set.games)
+
+  const myGames = games.filter((game) => game.server === 'ME')
+  const opponentGames = games.filter((game) => game.server === 'OPPONENT')
+
+  const myStatCount = getHistoryByPlayer(games, 'OPPONENT').filter((item) => item.type === statType).length
+  const opponentStatCount = getHistoryByPlayer(games, 'ME').filter((item) => item.type === statType).length
+
+  return {
+    all: {
+      me: { total: myGames.flatMap((game) => game.history).length, count: myStatCount },
+      opponent: { total: opponentGames.flatMap((game) => game.history).length, count: opponentStatCount },
+    },
+    bySet: sets.map((set) => ({
+      me: {
+        total: getHistoryByPlayer(set.games, 'ME').length,
+        count: getHistoryByPlayer(set.games, 'OPPONENT').filter((item) => item.type === statType).length,
+      },
+      opponent: {
+        total: getHistoryByPlayer(set.games, 'OPPONENT').length,
+        count: getHistoryByPlayer(set.games, 'ME').filter((item) => item.type === statType).length,
       },
     })),
   }
@@ -227,6 +255,28 @@ export const getGamesStat = (sets: ISet[], type: 'service' | 'return') => {
             ? game.server === 'OPPONENT' && game.opponentScore > game.myScore
             : game.server === 'ME' && game.opponentScore > game.myScore
         }).length },
+    })),
+  }
+}
+
+export const getAggressiveMargin = (sets: ISet[]) => {
+  const winners = getStat(sets, 'Winner')
+  const forcedErrors = getStat(sets, 'Forced error')
+  const unforcedErrors = getSpecialStat(sets, 'Unforced error')
+
+  const myStatCount = winners.all.me.count + forcedErrors.all.opponent.count - unforcedErrors.all.me.count
+  const opponentStatCount = winners.all.opponent.count + forcedErrors.all.me.count - unforcedErrors.all.opponent.count
+
+  return {
+    all: {
+      me: { count: myStatCount },
+      opponent: { count: opponentStatCount },
+    },
+    bySet: sets.map((set, index) => ({
+      me: { count: winners.bySet[index].me.count + forcedErrors.bySet[index].opponent.count
+        - unforcedErrors.bySet[index].me.count },
+      opponent: { count: winners.bySet[index].opponent.count + forcedErrors.bySet[index].me.count
+        - unforcedErrors.bySet[index].opponent.count },
     })),
   }
 }

@@ -1,7 +1,7 @@
 import { MatchModel, SetModel, ISet, IMatch } from '../models/match.model.js'
 import { Schema, startSession } from 'mongoose'
 import { ApiError } from '../middlewares/error.middleware.js'
-import { getBreakPointsStat, getGamesStat, getServesPoints, getServesStat, getStat,
+import { getAggressiveMargin, getBreakPointsStat, getGamesStat, getServesPoints, getServesStat, getSpecialStat, getStat,
   getTotalReturnWon, getTotalServiceWon, getTotalWon } from '../utils/match.utils.js'
 
 export type CreateMatchReq = {
@@ -145,10 +145,10 @@ const getDetailsByMatch = async (id: string) => {
   const sets = match.sets as unknown as ISet[]
 
   const aces = getStat(sets, 'Ace')
-  const doubleFaults = getStat(sets, 'Double fault')
+  const doubleFaults = getSpecialStat(sets, 'Double fault')
   const winners = getStat(sets, 'Winner')
   const forcedErrors = getStat(sets, 'Forced error')
-  const unforcedErrors = getStat(sets, 'Unforced error')
+  const unforcedErrors = getSpecialStat(sets, 'Unforced error')
   const totalWon = getTotalWon(sets)
   const totalServiceWon = getTotalServiceWon(sets)
   const totalReturnWon = getTotalReturnWon(sets)
@@ -160,6 +160,7 @@ const getDetailsByMatch = async (id: string) => {
   const breakPointsWon = getBreakPointsStat(sets, 'won')
   const serviceGames = getGamesStat(sets, 'service')
   const returnGames = getGamesStat(sets, 'return')
+  const aggressiveMargin = getAggressiveMargin(sets)
 
   return {
     aces,
@@ -178,6 +179,7 @@ const getDetailsByMatch = async (id: string) => {
     breakPointsWon,
     serviceGames,
     returnGames,
+    aggressiveMargin,
   }
 }
 
