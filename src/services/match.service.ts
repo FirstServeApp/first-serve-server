@@ -157,8 +157,6 @@ const getDetailsByMatch = async (id: string) => {
   const firstServePointsWon = getServesPoints(sets, '1')
   const secondServePointsWon = getServesPoints(sets, '2')
   const breakPointsWon = getBreakPointsStat(sets)
-  const serviceGames = getGamesStat(sets, 'service')
-  const returnGames = getGamesStat(sets, 'return')
   const aggressiveMargin = getAggressiveMargin(sets)
 
   return {
@@ -175,8 +173,6 @@ const getDetailsByMatch = async (id: string) => {
     firstServePointsWon,
     secondServePointsWon,
     breakPointsWon,
-    serviceGames,
-    returnGames,
     aggressiveMargin,
   }
 }
