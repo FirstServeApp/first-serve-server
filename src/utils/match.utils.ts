@@ -66,6 +66,34 @@ export const getStat = (sets: ISet[], statType: StatType) => {
   }
 }
 
+export const getWinners = (sets: ISet[]) => {
+  const history = sets.flatMap((set) => set.games).flatMap((game) => game.history)
+
+  const myStatCount = history.filter((item) => item.type === 'Winner' && item.server === 'ME').length
+  const opponentStatCount = history.filter((item) => item.type === 'Winner' && item.server === 'OPPONENT').length
+
+  return {
+    all: {
+      me: { total: history.length, count: myStatCount },
+      opponent: { total: history.length, count: opponentStatCount },
+    },
+    bySet: sets.map((set) => ({
+      me: {
+        total: set.games.flatMap((item) => item.history).length,
+        count: set.games
+          .flatMap((item) => item.history)
+          .filter((item) => item.type === 'Winner' && item.server === 'ME').length,
+      },
+      opponent: {
+        total: set.games.flatMap((item) => item.history).length,
+        count: set.games
+          .flatMap((item) => item.history)
+          .filter((item) => item.type === 'Winner' && item.server === 'OPPONENT').length,
+      },
+    })),
+  }
+}
+
 export const getSpecialStat = (sets: ISet[], statType: SpeciaStatType) => {
   const games = sets.flatMap((set) => set.games)
 

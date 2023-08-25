@@ -2,7 +2,7 @@ import { MatchModel, SetModel, ISet, IMatch } from '../models/match.model.js'
 import { Schema, startSession } from 'mongoose'
 import { ApiError } from '../middlewares/error.middleware.js'
 import { getAggressiveMargin, getBreakPointsStat, getGamesStat, getServesPoints, getServesStat, getSpecialStat, getStat,
-  getTotalReturnWon, getTotalServiceWon, getTotalWon } from '../utils/match.utils.js'
+  getTotalReturnWon, getTotalServiceWon, getTotalWon, getWinners } from '../utils/match.utils.js'
 
 export type CreateMatchReq = {
   user_id: Schema.Types.ObjectId;
@@ -146,7 +146,7 @@ const getDetailsByMatch = async (id: string) => {
 
   const aces = getStat(sets, 'Ace')
   const doubleFaults = getSpecialStat(sets, 'Double fault')
-  const winners = getStat(sets, 'Winner')
+  const winners = getWinners(sets)
   const forcedErrors = getStat(sets, 'Forced error')
   const unforcedErrors = getSpecialStat(sets, 'Unforced error')
   const totalWon = getTotalWon(sets)
