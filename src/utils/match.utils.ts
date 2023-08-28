@@ -7,10 +7,10 @@ const getHistoryByPlayer = (games: IGame[], player: 'ME' | 'OPPONENT') => {
 const getBreakPoints = (games: IGame[], player: 'ME' | 'OPPONENT') => {
   let total = 0
   let count = 0
-  games.map(game => {
+  games.map((game) => {
     const isOpponentWin = game.opponentScore > game.myScore
     const gameBreakPoints = game.history
-      .map(item => {
+      .map((item) => {
         if (player === 'ME' && item.myScore >= 30 && item.opponentScore <= 15) {
           total += 1
           return 1
@@ -277,11 +277,13 @@ export const getServesStat = (sets: ISet[], serveType: '1' | '2') => {
     bySet: sets.map((set) => ({
       me: {
         total: getHistoryByPlayer(set.games, 'ME').length,
-        count: getHistoryByPlayer(set.games, 'ME').filter((item) => item.serve === serveType && item.type !== 'Double fault').length,
+        count: getHistoryByPlayer(set.games, 'ME')
+          .filter((item) => item.serve === serveType && item.type !== 'Double fault').length,
       },
       opponent: {
         total: getHistoryByPlayer(set.games, 'OPPONENT').length,
-        count: getHistoryByPlayer(set.games, 'OPPONENT').filter((item) => item.serve === serveType && item.type !== 'Double fault').length,
+        count: getHistoryByPlayer(set.games, 'OPPONENT')
+          .filter((item) => item.serve === serveType && item.type !== 'Double fault').length,
       },
     })),
   }
