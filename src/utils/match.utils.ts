@@ -36,7 +36,7 @@ const getBreakPoints = (games: IGame[], player: 'ME' | 'OPPONENT') => {
   return { total, count }
 }
 
-type StatType = 'Ace' | 'Winner' | 'Forced error'
+type StatType = 'Ace' | 'Winner'
 type SpeciaStatType = 'Unforced error' | 'Double fault'
 
 export const getStat = (sets: ISet[], statType: StatType) => {
@@ -89,6 +89,68 @@ export const getWinners = (sets: ISet[]) => {
         count: set.games
           .flatMap((item) => item.history)
           .filter((item) => item.type === 'Winner' && item.server === 'OPPONENT').length,
+      },
+    })),
+  }
+}
+
+export const getForcedErrors = (sets: ISet[]) => {
+  const games = sets.flatMap((set) => set.games)
+  const total = games.flatMap((game) => game.history).length
+  const history = sets.flatMap((set) => set.games).flatMap((game) => game.history)
+
+  const myStatCount = history.filter((item) => item.type === 'Forced error' && item.server === 'OPPONENT').length
+  const opponentStatCount = history.filter((item) => item.type === 'Forced error' && item.server === 'ME').length
+
+  return {
+    all: {
+      me: { total, count: myStatCount },
+      opponent: { total, count: opponentStatCount },
+    },
+    bySet: sets.map((set) => ({
+      me: {
+        total: set.games.flatMap((game) => game.history).length,
+        count: set.games
+          .flatMap((game) => game.history)
+          .filter((item) => item.type === 'Forced error' && item.server === 'OPPONENT').length,
+      },
+      opponent: {
+        total: set.games.flatMap((game) => game.history).length,
+        count: set.games
+          .flatMap((game) => game.history)
+          .filter((item) => item.type === 'Forced error' && item.server === 'ME').length,
+      },
+    })),
+  }
+}
+
+export const getDoubleFaults = (sets: ISet[]) => {
+  const games = sets.flatMap((set) => set.games)
+  const history = sets.flatMap((set) => set.games).flatMap((game) => game.history)
+
+  const myGames = games.filter((game) => game.server === 'ME')
+  const opponentGames = games.filter((game) => game.server === 'OPPONENT')
+
+  const myStatCount = history.filter((item) => item.type === 'Double fault' && item.server === 'OPPONENT').length
+  const opponentStatCount = history.filter((item) => item.type === 'Double fault' && item.server === 'ME').length
+
+  return {
+    all: {
+      me: { total: myGames.flatMap((game) => game.history).length, count: myStatCount },
+      opponent: { total: opponentGames.flatMap((game) => game.history).length, count: opponentStatCount },
+    },
+    bySet: sets.map((set) => ({
+      me: {
+        total: getHistoryByPlayer(set.games, 'ME').length,
+        count: set.games
+          .flatMap((game) => game.history)
+          .filter((item) => item.type === 'Double fault' && item.server === 'OPPONENT').length,
+      },
+      opponent: {
+        total: getHistoryByPlayer(set.games, 'OPPONENT').length,
+        count: set.games
+          .flatMap((game) => game.history)
+          .filter((item) => item.type === 'Double fault' && item.server === 'ME').length,
       },
     })),
   }
@@ -315,7 +377,7 @@ export const getGamesStat = (sets: ISet[], type: 'service' | 'return') => {
 
 export const getAggressiveMargin = (sets: ISet[]) => {
   const winners = getWinners(sets)
-  const forcedErrors = getStat(sets, 'Forced error')
+  const forcedErrors = getForcedErrors(sets)
   const unforcedErrors = getSpecialStat(sets, 'Unforced error')
 
   const myStatCount = winners.all.me.count + forcedErrors.all.opponent.count - unforcedErrors.all.me.count

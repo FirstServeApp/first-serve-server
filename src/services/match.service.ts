@@ -1,7 +1,8 @@
+import { getDoubleFaults } from './../utils/match.utils';
 import { MatchModel, SetModel, ISet, IMatch } from '../models/match.model.js'
 import { Schema, startSession } from 'mongoose'
 import { ApiError } from '../middlewares/error.middleware.js'
-import { getAggressiveMargin, getBreakPointsStat, getGamesStat, getServesPoints, getServesStat, getSpecialStat, getStat,
+import { getAggressiveMargin, getBreakPointsStat, getForcedErrors, getGamesStat, getServesPoints, getServesStat, getSpecialStat, getStat,
   getTotalReturnWon, getTotalServiceWon, getTotalWon, getWinners } from '../utils/match.utils.js'
 
 export type CreateMatchReq = {
@@ -145,9 +146,9 @@ const getDetailsByMatch = async (id: string) => {
   const sets = match.sets as unknown as ISet[]
 
   const aces = getStat(sets, 'Ace')
-  const doubleFaults = getSpecialStat(sets, 'Double fault')
+  const doubleFaults = getDoubleFaults(sets)
   const winners = getWinners(sets)
-  const forcedErrors = getStat(sets, 'Forced error')
+  const forcedErrors = getForcedErrors(sets)
   const unforcedErrors = getSpecialStat(sets, 'Unforced error')
   const totalWon = getTotalWon(sets)
   const totalServiceWon = getTotalServiceWon(sets)
