@@ -13,7 +13,7 @@ import {
   getTotalReturnWon,
   getTotalServiceWon,
   getTotalWon,
-  getWinners
+  getWinners,
 } from '../utils/match.utils.js'
 
 export type CreateMatchReq = {

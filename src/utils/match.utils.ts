@@ -311,7 +311,8 @@ export const getServesPoints = (sets: ISet[], serveType: '1' | '2') => {
       opponent: {
         total: getHistoryByPlayer(set.games, 'OPPONENT').length,
         count: getHistoryByPlayer(set.games, 'OPPONENT')
-          .filter((item) => item.serve === serveType && item.server === 'OPPONENT' && item.type !== 'Double fault').length,
+          .filter((item) => item.serve === serveType && item.server === 'OPPONENT'
+            && item.type !== 'Double fault').length,
       },
     })),
   }
