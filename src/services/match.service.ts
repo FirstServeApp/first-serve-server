@@ -1,4 +1,3 @@
-import { getDoubleFaults } from './../utils/match.utils'
 import { MatchModel, SetModel, ISet, IMatch } from '../models/match.model.js'
 import { Schema, startSession } from 'mongoose'
 import { ApiError } from '../middlewares/error.middleware.js'
@@ -14,6 +13,7 @@ import {
   getTotalServiceWon,
   getTotalWon,
   getWinners,
+  getDoubleFaults,
 } from '../utils/match.utils.js'
 
 export type CreateMatchReq = {
