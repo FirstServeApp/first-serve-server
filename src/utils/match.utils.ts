@@ -7,28 +7,38 @@ const getHistoryByPlayer = (games: IGame[], player: 'ME' | 'OPPONENT') => {
 const getBreakPoints = (games: IGame[], player: 'ME' | 'OPPONENT') => {
   let total = 0
   let count = 0
-  games.map((game) => {
+  const filtredGames = games.filter((item) => item.server !== player)
+  filtredGames.map((game) => {
     const isOpponentWin = game.opponentScore > game.myScore
-    const gameBreakPoints = game.history
-      .map((item) => {
-        if (player === 'ME' && item.myScore >= 30 && item.opponentScore <= 15) {
-          total += 1
-          return 1
-        } else if (player === 'ME' && item.myScore === 40 && item.opponentScore >= 40) {
-          total += 1
-          return 1
-        } else if (player === 'OPPONENT' && item.opponentScore >= 30 && item.myScore <= 15) {
-          total += 1
-          return 1
-        } else if (player === 'OPPONENT' && item.opponentScore === 40 && item.myScore >= 40) {
-          total += 1
-          return 1
-        }
-      })
+    // const gameBreakPoints = game.history
+    //   .map((item) => {
+    //     if (player === 'ME' && item.myScore >= 30 && item.opponentScore <= 15) {
+    //       total += 1
+    //       return 1
+    //     } else if (player === 'ME' && item.myScore === 40 && item.opponentScore >= 40) {
+    //       total += 1
+    //       return 1
+    //     } else if (player === 'OPPONENT' && item.opponentScore >= 30 && item.myScore <= 15) {
+    //       total += 1
+    //       return 1
+    //     } else if (player === 'OPPONENT' && item.opponentScore === 40 && item.myScore >= 40) {
+    //       total += 1
+    //       return 1
+    //     }
+    //   })
+    const gameBreakPoints = game.history.map((item) => {
+      if (player === 'ME' && item.myScore > item.opponentScore && item.myScore >= 40) {
+        total += 1
+        return 1
+      } else if (player === 'OPPONENT' && item.opponentScore > item.myScore && item.opponentScore >= 40) {
+        total += 1
+        return 1
+      }
+    })
 
-    if (player === 'OPPONENT' && isOpponentWin && game.server === 'ME' && gameBreakPoints.length > 0) {
-      count +=1
-    } else if (player === 'ME' && !isOpponentWin && game.server === 'OPPONENT' && gameBreakPoints.length > 0) {
+    if (player === 'ME' && !isOpponentWin && gameBreakPoints.length > 0) {
+      count += 1
+    } else if (player === 'OPPONENT' && isOpponentWin && gameBreakPoints.length > 0) {
       count += 1
     }
   })
@@ -37,7 +47,6 @@ const getBreakPoints = (games: IGame[], player: 'ME' | 'OPPONENT') => {
 }
 
 type StatType = 'Ace' | 'Winner'
-type SpeciaStatType = 'Unforced error' | 'Double fault'
 
 export const getStat = (sets: ISet[], statType: StatType) => {
   const games = sets.flatMap((set) => set.games)
@@ -128,26 +137,29 @@ export const getDoubleFaults = (sets: ISet[]) => {
   const games = sets.flatMap((set) => set.games)
   const history = sets.flatMap((set) => set.games).flatMap((game) => game.history)
 
-  const myGames = games.filter((game) => game.server === 'ME')
-  const opponentGames = games.filter((game) => game.server === 'OPPONENT')
+  // const myGames = games.filter((game) => game.server === 'ME')
+  // const opponentGames = games.filter((game) => game.server === 'OPPONENT')
 
   const myStatCount = history.filter((item) => item.type === 'Double fault' && item.server === 'OPPONENT').length
   const opponentStatCount = history.filter((item) => item.type === 'Double fault' && item.server === 'ME').length
 
   return {
     all: {
-      me: { total: myGames.flatMap((game) => game.history).length, count: myStatCount },
-      opponent: { total: opponentGames.flatMap((game) => game.history).length, count: opponentStatCount },
+      me: { total: getHistoryByPlayer(games, 'ME').filter((item) => item.serve === '2').length, count: myStatCount },
+      opponent: {
+        total: getHistoryByPlayer(games, 'OPPONENT').filter((item) => item.serve === '2').length,
+        count: opponentStatCount,
+      },
     },
     bySet: sets.map((set) => ({
       me: {
-        total: getHistoryByPlayer(set.games, 'ME').length,
+        total: getHistoryByPlayer(set.games, 'ME').filter((item) => item.serve === '2').length,
         count: set.games
           .flatMap((game) => game.history)
           .filter((item) => item.type === 'Double fault' && item.server === 'OPPONENT').length,
       },
       opponent: {
-        total: getHistoryByPlayer(set.games, 'OPPONENT').length,
+        total: getHistoryByPlayer(set.games, 'ME').filter((item) => item.serve === '2').length,
         count: set.games
           .flatMap((game) => game.history)
           .filter((item) => item.type === 'Double fault' && item.server === 'ME').length,
@@ -156,28 +168,29 @@ export const getDoubleFaults = (sets: ISet[]) => {
   }
 }
 
-export const getSpecialStat = (sets: ISet[], statType: SpeciaStatType) => {
+export const getUnforcedErrors = (sets: ISet[]) => {
   const games = sets.flatMap((set) => set.games)
+  const history = games.flatMap((game) => game.history)
 
-  const myGames = games.filter((game) => game.server === 'ME')
-  const opponentGames = games.filter((game) => game.server === 'OPPONENT')
+  // const myGames = games.filter((game) => game.server === 'ME')
+  // const opponentGames = games.filter((game) => game.server === 'OPPONENT')
 
-  const myStatCount = getHistoryByPlayer(games, 'OPPONENT').filter((item) => item.type === statType).length
-  const opponentStatCount = getHistoryByPlayer(games, 'ME').filter((item) => item.type === statType).length
+  const myStatCount = getHistoryByPlayer(games, 'OPPONENT').filter((item) => item.type === 'Unforced error').length
+  const opponentStatCount = getHistoryByPlayer(games, 'ME').filter((item) => item.type === 'Unforced error').length
 
   return {
     all: {
-      me: { total: myGames.flatMap((game) => game.history).length, count: myStatCount },
-      opponent: { total: opponentGames.flatMap((game) => game.history).length, count: opponentStatCount },
+      me: { total: history.length, count: myStatCount },
+      opponent: { total: history.length, count: opponentStatCount },
     },
     bySet: sets.map((set) => ({
       me: {
-        total: getHistoryByPlayer(set.games, 'ME').length,
-        count: getHistoryByPlayer(set.games, 'OPPONENT').filter((item) => item.type === statType).length,
+        total: set.games.flatMap((item) => item.history).length,
+        count: getHistoryByPlayer(set.games, 'OPPONENT').filter((item) => item.type === 'Unforced error').length,
       },
       opponent: {
-        total: getHistoryByPlayer(set.games, 'OPPONENT').length,
-        count: getHistoryByPlayer(set.games, 'ME').filter((item) => item.type === statType).length,
+        total: set.games.flatMap((item) => item.history).length,
+        count: getHistoryByPlayer(set.games, 'ME').filter((item) => item.type === 'Unforced error').length,
       },
     })),
   }
@@ -299,17 +312,19 @@ export const getServesPoints = (sets: ISet[], serveType: '1' | '2') => {
 
   return {
     all: {
-      me: { total: getHistoryByPlayer(games, 'ME').length, count: myServesCount },
-      opponent: { total: getHistoryByPlayer(games, 'OPPONENT').length, count: opponentServesCount },
+      me: { total: getServesStat(sets, serveType).all.me.count, count: myServesCount },
+      opponent: { total: getServesStat(sets, serveType).all.opponent.count, count: opponentServesCount },
     },
     bySet: sets.map((set) => ({
       me: {
-        total: getHistoryByPlayer(set.games, 'ME').length,
+        total: getHistoryByPlayer(set.games, 'ME')
+          .filter((item) => item.serve === serveType).length,
         count: getHistoryByPlayer(set.games, 'ME')
           .filter((item) => item.serve === serveType && item.server === 'ME' && item.type !== 'Double fault').length,
       },
       opponent: {
-        total: getHistoryByPlayer(set.games, 'OPPONENT').length,
+        total: getHistoryByPlayer(set.games, 'OPPONENT')
+          .filter((item) => item.serve === serveType).length,
         count: getHistoryByPlayer(set.games, 'OPPONENT')
           .filter((item) => item.serve === serveType && item.server === 'OPPONENT'
             && item.type !== 'Double fault').length,
@@ -381,7 +396,7 @@ export const getGamesStat = (sets: ISet[], type: 'service' | 'return') => {
 export const getAggressiveMargin = (sets: ISet[]) => {
   const winners = getWinners(sets)
   const forcedErrors = getForcedErrors(sets)
-  const unforcedErrors = getSpecialStat(sets, 'Unforced error')
+  const unforcedErrors = getUnforcedErrors(sets)
 
   const myStatCount = winners.all.me.count + forcedErrors.all.opponent.count - unforcedErrors.all.me.count
   const opponentStatCount = winners.all.opponent.count + forcedErrors.all.me.count - unforcedErrors.all.opponent.count

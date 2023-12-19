@@ -7,7 +7,7 @@ import {
   getForcedErrors,
   getServesPoints,
   getServesStat,
-  getSpecialStat,
+  getUnforcedErrors,
   getStat,
   getTotalReturnWon,
   getTotalServiceWon,
@@ -160,7 +160,7 @@ const getDetailsByMatch = async (id: string) => {
   const doubleFaults = getDoubleFaults(sets)
   const winners = getWinners(sets)
   const forcedErrors = getForcedErrors(sets)
-  const unforcedErrors = getSpecialStat(sets, 'Unforced error')
+  const unforcedErrors = getUnforcedErrors(sets)
   const totalWon = getTotalWon(sets)
   const totalServiceWon = getTotalServiceWon(sets)
   const totalReturnWon = getTotalReturnWon(sets)
