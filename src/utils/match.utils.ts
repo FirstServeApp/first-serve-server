@@ -4,7 +4,7 @@ const getHistoryByPlayer = (games: IGame[], player: 'ME' | 'OPPONENT') => {
   return games.filter((game) => game.server === player).flatMap((item) => item.history)
 }
 
-const getBreakPoints = (games: IGame[], player: 'ME' | 'OPPONENT') => {
+const s = (games: IGame[], player: 'ME' | 'OPPONENT') => {
   let total = 0
   let count = 0
   const filtredGames = games.filter((item) => item.server !== player)
@@ -26,20 +26,56 @@ const getBreakPoints = (games: IGame[], player: 'ME' | 'OPPONENT') => {
     //       return 1
     //     }
     //   })
-    const gameBreakPoints = game.history.map((item) => {
+    game.history.map((item) => {
       if (player === 'ME' && item.myScore > item.opponentScore && item.myScore >= 40) {
         total += 1
-        return 1
       } else if (player === 'OPPONENT' && item.opponentScore > item.myScore && item.opponentScore >= 40) {
         total += 1
-        return 1
       }
     })
 
-    if (player === 'ME' && !isOpponentWin && gameBreakPoints.length > 0) {
+    if (player === 'ME' && !isOpponentWin && total > 0) {
       count += 1
-    } else if (player === 'OPPONENT' && isOpponentWin && gameBreakPoints.length > 0) {
+    } else if (player === 'OPPONENT' && isOpponentWin && total > 0) {
       count += 1
+    }
+  })
+
+  return { total, count }
+}
+
+const getBreakPoints = (games: IGame[], player: 'ME' | 'OPPONENT') => {
+  let total = 0
+  let count = 0
+
+  const filteredGames = games.filter((game) => game.server !== player)
+  filteredGames.flatMap((game) => game.history).map((item, index, arr) => {
+    if (player === 'ME') {
+      // if (item.myScore > item.opponentScore && item.myScore >= 40
+      //   && arr[index + 1]?.server === 'ME' && arr[index + 1]?.myScore > item.myScore) {
+      //   total += 1
+      // }
+
+      if (item.myScore - item.opponentScore > 20
+        && (index+1 === arr.length ? true : arr[index + 1]?.myScore < item.myScore) && item.server === 'ME') {
+        count += 1
+      }
+      if (item.myScore >= 40 && item.myScore - item.opponentScore > 20) {
+        total += 1
+      }
+    } else if (player === 'OPPONENT') {
+      // if (item.opponentScore > item.myScore && item.opponentScore >= 40
+      //   && arr[index + 1]?.server === 'OPPONENT' && arr[index + 1]?.opponentScore > item.opponentScore) {
+      //   total += 1
+      // }
+
+      if (item.opponentScore - item.myScore > 20 && (index + 1 === arr.length ? true
+        : arr[index + 1]?.opponentScore < item.opponentScore) && item.server === 'OPPONENT') {
+        count += 1
+      }
+      if (item.opponentScore >= 40 && item.opponentScore - item.myScore > 20) {
+        total += 1
+      }
     }
   })
 
@@ -143,23 +179,31 @@ export const getDoubleFaults = (sets: ISet[]) => {
   const myStatCount = history.filter((item) => item.type === 'Double fault' && item.server === 'OPPONENT').length
   const opponentStatCount = history.filter((item) => item.type === 'Double fault' && item.server === 'ME').length
 
+  const getTotal = (gamesArr: IGame[], player: 'ME' | 'OPPONENT'): number => {
+    const secondServes = getHistoryByPlayer(gamesArr, player)
+      .filter((item) => item.serve === '2' && item.type !== 'Double fault').length
+    const doubleFaults = getHistoryByPlayer(games, player)
+      .filter((item) => item.type === 'Double fault').length
+    return secondServes + doubleFaults
+  }
+
   return {
     all: {
-      me: { total: getHistoryByPlayer(games, 'ME').filter((item) => item.serve === '2').length, count: myStatCount },
+      me: { total: getTotal(games, 'ME'), count: myStatCount },
       opponent: {
-        total: getHistoryByPlayer(games, 'OPPONENT').filter((item) => item.serve === '2').length,
+        total: getTotal(games, 'OPPONENT'),
         count: opponentStatCount,
       },
     },
     bySet: sets.map((set) => ({
       me: {
-        total: getHistoryByPlayer(set.games, 'ME').filter((item) => item.serve === '2').length,
+        total: getTotal(set.games, 'ME'),
         count: set.games
           .flatMap((game) => game.history)
           .filter((item) => item.type === 'Double fault' && item.server === 'OPPONENT').length,
       },
       opponent: {
-        total: getHistoryByPlayer(set.games, 'ME').filter((item) => item.serve === '2').length,
+        total: getTotal(set.games, 'OPPONENT'),
         count: set.games
           .flatMap((game) => game.history)
           .filter((item) => item.type === 'Double fault' && item.server === 'ME').length,
@@ -274,7 +318,87 @@ export const getTotalReturnWon = (sets: ISet[]) => {
   }
 }
 
-export const getServesStat = (sets: ISet[], serveType: '1' | '2') => {
+// export const getSecondServes = (sets: ISet[], serveType: '1' | '2') => {
+//   const games = sets.flatMap((set) => set.games)
+
+//   const myServesCount = getHistoryByPlayer(games, 'ME')
+//     .filter((item) => item.serve === serveType && item.type !== 'Double fault').length
+//   const opponentServesCount = getHistoryByPlayer(games, 'OPPONENT')
+//     .filter((item) => item.serve === serveType && item.type !== 'Double fault').length
+
+//   return {
+//     all: {
+//       me: {
+//         total: getHistoryByPlayer(games, 'ME').filter((item) => item.serve === serveType).length,
+//         count: myServesCount,
+//       },
+//       opponent: {
+//         total: getHistoryByPlayer(games, 'OPPONENT').filter((item) => item.serve === serveType).length,
+//         count: opponentServesCount,
+//       },
+//     },
+//     bySet: sets.map((set) => ({
+//       me: {
+//         total: getHistoryByPlayer(set.games, 'ME')
+//           .filter((item) => item.serve === serveType).length,
+//         count: getHistoryByPlayer(set.games, 'ME')
+//           .filter((item) => item.serve === serveType && item.type !== 'Double fault').length,
+//       },
+//       opponent: {
+//         total: getHistoryByPlayer(set.games, 'OPPONENT')
+//           .filter((item) => item.serve === serveType).length,
+//         count: getHistoryByPlayer(set.games, 'OPPONENT')
+//           .filter((item) => item.serve === serveType && item.type !== 'Double fault').length,
+//       },
+//     })),
+//   }
+// }
+
+export const getSecondServes = (sets: ISet[]) => {
+  const serveType = '2'
+  const games = sets.flatMap((set) => set.games)
+
+  const myServesCount = getHistoryByPlayer(games, 'ME')
+    .filter((item) => item.serve === serveType && item.type !== 'Double fault').length
+  const opponentServesCount = getHistoryByPlayer(games, 'OPPONENT')
+    .filter((item) => item.serve === serveType && item.type !== 'Double fault').length
+
+  const getTotal = (gamesArr: IGame[], player: 'ME' | 'OPPONENT'): number => {
+    const secondServes = getHistoryByPlayer(gamesArr, player)
+      .filter((item) => item.serve === serveType && item.type !== 'Double fault').length
+    const doubleFaults = getHistoryByPlayer(games, player)
+      .filter((item) => item.type === 'Double fault').length
+    return secondServes + doubleFaults
+  }
+
+  return {
+    all: {
+      me: {
+        total: getTotal(games, 'ME'),
+        count: myServesCount,
+      },
+      opponent: {
+        total: getTotal(games, 'OPPONENT'),
+        count: opponentServesCount,
+      },
+    },
+    bySet: sets.map((set) => ({
+      me: {
+        total: getTotal(set.games, 'ME'),
+        count: getHistoryByPlayer(set.games, 'ME')
+          .filter((item) => item.serve === serveType && item.type !== 'Double fault').length,
+      },
+      opponent: {
+        total: getTotal(set.games, 'OPPONENT'),
+        count: getHistoryByPlayer(set.games, 'OPPONENT')
+          .filter((item) => item.serve === serveType && item.type !== 'Double fault').length,
+      },
+    })),
+  }
+}
+
+export const getFirstServes = (sets: ISet[]) => {
+  const serveType = '1'
   const games = sets.flatMap((set) => set.games)
 
   const myServesCount = getHistoryByPlayer(games, 'ME')
@@ -284,8 +408,14 @@ export const getServesStat = (sets: ISet[], serveType: '1' | '2') => {
 
   return {
     all: {
-      me: { total: getHistoryByPlayer(games, 'ME').length, count: myServesCount },
-      opponent: { total: getHistoryByPlayer(games, 'OPPONENT').length, count: opponentServesCount },
+      me: {
+        total: getHistoryByPlayer(games, 'ME').length,
+        count: myServesCount,
+      },
+      opponent: {
+        total: getHistoryByPlayer(games, 'OPPONENT').length,
+        count: opponentServesCount,
+      },
     },
     bySet: sets.map((set) => ({
       me: {
@@ -312,8 +442,12 @@ export const getServesPoints = (sets: ISet[], serveType: '1' | '2') => {
 
   return {
     all: {
-      me: { total: getServesStat(sets, serveType).all.me.count, count: myServesCount },
-      opponent: { total: getServesStat(sets, serveType).all.opponent.count, count: opponentServesCount },
+      me: {
+        total: getHistoryByPlayer(games, 'ME')
+          .filter((item) => item.serve === serveType).length, count: myServesCount },
+      opponent: {
+        total: getHistoryByPlayer(games, 'OPPONENT')
+          .filter((item) => item.serve === serveType).length, count: opponentServesCount },
     },
     bySet: sets.map((set) => ({
       me: {
@@ -325,6 +459,50 @@ export const getServesPoints = (sets: ISet[], serveType: '1' | '2') => {
       opponent: {
         total: getHistoryByPlayer(set.games, 'OPPONENT')
           .filter((item) => item.serve === serveType).length,
+        count: getHistoryByPlayer(set.games, 'OPPONENT')
+          .filter((item) => item.serve === serveType && item.server === 'OPPONENT'
+            && item.type !== 'Double fault').length,
+      },
+    })),
+  }
+}
+
+export const getSecondServeWon = (sets: ISet[]) => {
+  const serveType = '2'
+  const games = sets.flatMap((set) => set.games)
+
+  const myServesCount = getHistoryByPlayer(games, 'ME')
+    .filter((item) => item.serve === serveType && item.server === 'ME' && item.type !== 'Double fault').length
+  const opponentServesCount = getHistoryByPlayer(games, 'OPPONENT')
+    .filter((item) => item.serve === serveType && item.server === 'OPPONENT' && item.type !== 'Double fault').length
+
+  const getTotal = (gamesArr: IGame[], player: 'ME' | 'OPPONENT'): number => {
+    const secondServes = getHistoryByPlayer(gamesArr, player)
+      .filter((item) => item.serve === serveType && item.type !== 'Double fault').length
+    const doubleFaults = getHistoryByPlayer(games, player)
+      .filter((item) => item.type === 'Double fault').length
+    return secondServes + doubleFaults
+  }
+
+  return {
+    all: {
+      me: {
+        total: getTotal(games, 'ME'),
+        count: myServesCount,
+      },
+      opponent: {
+        total: getTotal(games, 'OPPONENT'),
+        count: opponentServesCount,
+      },
+    },
+    bySet: sets.map((set) => ({
+      me: {
+        total: getTotal(set.games, 'ME'),
+        count: getHistoryByPlayer(set.games, 'ME')
+          .filter((item) => item.serve === serveType && item.server === 'ME' && item.type !== 'Double fault').length,
+      },
+      opponent: {
+        total: getTotal(set.games, 'OPPONENT'),
         count: getHistoryByPlayer(set.games, 'OPPONENT')
           .filter((item) => item.serve === serveType && item.server === 'OPPONENT'
             && item.type !== 'Double fault').length,

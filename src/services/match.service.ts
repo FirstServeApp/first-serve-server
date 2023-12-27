@@ -6,7 +6,6 @@ import {
   getBreakPointsStat,
   getForcedErrors,
   getServesPoints,
-  getServesStat,
   getUnforcedErrors,
   getStat,
   getTotalReturnWon,
@@ -14,6 +13,9 @@ import {
   getTotalWon,
   getWinners,
   getDoubleFaults,
+  getSecondServes,
+  getFirstServes,
+  getSecondServeWon,
 } from '../utils/match.utils.js'
 
 export type CreateMatchReq = {
@@ -164,10 +166,10 @@ const getDetailsByMatch = async (id: string) => {
   const totalWon = getTotalWon(sets)
   const totalServiceWon = getTotalServiceWon(sets)
   const totalReturnWon = getTotalReturnWon(sets)
-  const firstServes = getServesStat(sets, '1')
-  const secondServes = getServesStat(sets, '2')
+  const firstServes = getFirstServes(sets)
+  const secondServes = getSecondServes(sets)
   const firstServePointsWon = getServesPoints(sets, '1')
-  const secondServePointsWon = getServesPoints(sets, '2')
+  const secondServePointsWon = getSecondServeWon(sets)
   const breakPointsWon = getBreakPointsStat(sets)
   const aggressiveMargin = getAggressiveMargin(sets)
 
