@@ -24,7 +24,7 @@ export const validateGoogleAuthBody = socialAuthValidator.body(Joi.object({
   name: Joi
     .string()
     .min(1)
-    .max(16)
+    .max(64)
     .required()
     .messages({
       'any.required': 'Name is required',
@@ -58,7 +58,7 @@ export const validateFacebookAuthBody = socialAuthValidator.body(Joi.object({
   name: Joi
     .string()
     .min(1)
-    .max(16)
+    .max(64)
     .required()
     .messages({
       'any.required': 'Name is required',
@@ -92,7 +92,7 @@ export const validateAppleAuthBody = socialAuthValidator.body(Joi.object({
   name: Joi
     .string()
     .min(1)
-    .max(16)
+    .max(64)
     .required()
     .messages({
       'any.required': 'Name is required',
