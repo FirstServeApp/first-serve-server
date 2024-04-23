@@ -4,6 +4,7 @@ import {
   createMatch,
   getMatchById,
   deleteMatch,
+  getMatchesCountByUser,
   getMatchesByUser,
   getMatchesByDate,
   getMatchesByPlayers,
@@ -74,8 +75,9 @@ const getMatchesByUserController = async (
     const { skip, limit } = getPaginationDataFromQuery(req.query)
 
     const matches = await getMatchesByUser(_id, skip, limit)
+    const count = await getMatchesCountByUser(_id)
 
-    return res.json(matches)
+    return res.json(matches).setHeader('Total-Count', count)
   } catch (e) {
     next(e)
   }

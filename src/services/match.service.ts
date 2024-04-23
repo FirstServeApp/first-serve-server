@@ -73,6 +73,12 @@ const getMatchById = async (id: Schema.Types.ObjectId): Promise<IMatch> => {
   return match
 }
 
+const getMatchesCountByUser = async (userId: Schema.Types.ObjectId): Promise<number> => {
+  const count = await MatchModel.count({ user_id: userId }).exec()
+
+  return count
+}
+
 const getMatchesByUser = async (userId: Schema.Types.ObjectId, skip: number, limit: number): Promise<IMatch[]> => {
   const matches = await MatchModel
     .find({ user_id: userId })
@@ -204,6 +210,7 @@ export {
   createMatch,
   getMatchById,
   deleteMatch,
+  getMatchesCountByUser,
   getMatchesByUser,
   getMatchesByDate,
   getMatchesByPlayers,

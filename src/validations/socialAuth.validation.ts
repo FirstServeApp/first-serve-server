@@ -16,7 +16,7 @@ export interface SocialAuthRequestSchema extends JoiValidation.ValidatedRequestS
     avatar?: string;
     googleId?: string;
     facebookId?: string;
-    appleId: string;
+    appleId?: string;
   }
 }
 
