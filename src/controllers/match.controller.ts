@@ -77,7 +77,10 @@ const getMatchesByUserController = async (
     const matches = await getMatchesByUser(_id, skip, limit)
     const count = await getMatchesCountByUser(_id)
 
-    return res.json(matches).setHeader('Total-Count', count)
+    return res.json({
+      matches,
+      count,
+    })
   } catch (e) {
     next(e)
   }
