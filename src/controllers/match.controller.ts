@@ -21,6 +21,7 @@ import {
 } from '../validations/match.validation.js'
 import { IUserDto } from '../dtos/user.dto.js'
 import { getDatesFromQuery, getPaginationDataFromQuery, getPlayersFromQuery } from '../utils/query.utils.js'
+import { ApiError } from '../middlewares/error.middleware.js'
 
 const createMatchController = async (
   req: JoiValidation.ValidatedRequest<MatchRequestSchema>,
@@ -95,6 +96,9 @@ const getMatchesByDateController = async (
 ) => {
   try {
     const { fromDate, toDate } = getDatesFromQuery(req.query)
+    if (!fromDate || !toDate) {
+      return ApiError.BadRequest('from and to queries are required')
+    }
     const { skip, limit } = getPaginationDataFromQuery(req.query)
     const { _id } = req.user as IUserDto
 

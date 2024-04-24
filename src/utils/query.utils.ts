@@ -25,12 +25,12 @@ const getPlayersFromQuery = (query: Query): string[] => {
 
 const getDatesFromQuery = (query: Query) => {
   const { from, to } = query
-  if (!from || !to) {
+  if ((from && !to) || (to && !from)) {
     throw ApiError.BadRequest('Please specify a both `from` and `to` dates')
   }
 
-  const fromDate = new Date(String(from))
-  const toDate = new Date(String(to))
+  const fromDate = from ? new Date(String(from)) : undefined
+  const toDate = to ? new Date(String(to)) : undefined
 
   return {
     fromDate,
