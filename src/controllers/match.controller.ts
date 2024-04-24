@@ -16,8 +16,8 @@ import {
   GetByIdRequestSchema,
   DateFilterSchema,
   PlayersFilterSchema,
-  PaginationQueryScema,
   ChangeOpponentNameSchema,
+  GetAllMatchesSchema,
 } from '../validations/match.validation.js'
 import { IUserDto } from '../dtos/user.dto.js'
 import { getDatesFromQuery, getPaginationDataFromQuery, getPlayersFromQuery } from '../utils/query.utils.js'
@@ -66,16 +66,18 @@ const deleteMatchController = async (
 }
 
 const getMatchesByUserController = async (
-  req: JoiValidation.ValidatedRequest<PaginationQueryScema>,
+  req: JoiValidation.ValidatedRequest<GetAllMatchesSchema>,
   res: Response,
   next: NextFunction,
 ) => {
   try {
     const { _id } = req.user as IUserDto
     const { skip, limit } = getPaginationDataFromQuery(req.query)
+    const { fromDate, toDate } = getDatesFromQuery(req.query)
+    const players = getPlayersFromQuery(req.query)
 
-    const matches = await getMatchesByUser(_id, skip, limit)
-    const count = await getMatchesCountByUser(_id)
+    const matches = await getMatchesByUser(_id, skip, limit, fromDate, toDate, players)
+    const count = await getMatchesCountByUser(_id, fromDate, toDate, players)
 
     return res.json({
       matches,

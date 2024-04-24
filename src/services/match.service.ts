@@ -1,5 +1,5 @@
 import { MatchModel, SetModel, ISet, IMatch } from '../models/match.model.js'
-import { Schema, startSession } from 'mongoose'
+import { FilterQuery, Schema, startSession } from 'mongoose'
 import { ApiError } from '../middlewares/error.middleware.js'
 import {
   getAggressiveMargin,
@@ -73,15 +73,39 @@ const getMatchById = async (id: Schema.Types.ObjectId): Promise<IMatch> => {
   return match
 }
 
-const getMatchesCountByUser = async (userId: Schema.Types.ObjectId): Promise<number> => {
-  const count = await MatchModel.count({ user_id: userId }).exec()
+const getMatchesCountByUser = async (
+  userId: Schema.Types.ObjectId, fromDate?: Date,
+  toDate?: Date, players?: string[],
+): Promise<number> => {
+  const filter: FilterQuery<IMatch> = { user_id: userId }
+  if (fromDate && toDate) {
+    filter.createdAt = { $gte: fromDate, $lte: toDate }
+  }
+  if (players && players.length > 0) {
+    filter.opponentName = { $in: players }
+  }
+  const count = await MatchModel.count(filter).exec()
 
   return count
 }
 
-const getMatchesByUser = async (userId: Schema.Types.ObjectId, skip: number, limit: number): Promise<IMatch[]> => {
+const getMatchesByUser = async (
+  userId: Schema.Types.ObjectId,
+  skip: number,
+  limit: number,
+  fromDate?: Date,
+  toDate?: Date,
+  players?: string[],
+): Promise<IMatch[]> => {
+  const filter: FilterQuery<IMatch> = { user_id: userId }
+  if (fromDate && toDate) {
+    filter.createdAt = { $gte: fromDate, $lte: toDate }
+  }
+  if (players && players.length > 0) {
+    filter.opponentName = { $in: players }
+  }
   const matches = await MatchModel
-    .find({ user_id: userId })
+    .find(filter)
     .skip(skip)
     .limit(limit)
     .sort({ createdAt: -1 })

@@ -196,6 +196,57 @@ export const validatePlayersFilterQuery = matchValidator.query(Joi.object({
     }),
 }))
 
+export interface GetAllMatchesSchema extends JoiValidation.ValidatedRequestSchema {
+  [JoiValidation.ContainerTypes.Query]: {
+    from?: Date;
+    to?: Date;
+    players?: string;
+    page?: string;
+    pageSize?: string;
+  }
+}
+
+export const validateGetAllMatchesQuery = matchValidator.query(Joi.object({
+  from: Joi
+    .string()
+    .optional()
+    .isoDate()
+    .messages({
+      'string.isoDate': '`from` query param must be a valid ISO date string',
+    }),
+  to: Joi
+    .string()
+    .optional()
+    .isoDate()
+    .messages({
+      'string.isoDate': '`to` query param must be a valid ISO date string',
+    }),
+  players: Joi
+    .string()
+    .optional()
+    .messages({
+      'string.empty': 'Players query param cannot be empty',
+      'string.base': 'Players must be a string',
+    }),
+  page: Joi
+    .number()
+    .optional()
+    .messages({
+      'number.base': 'Page value must be a number',
+      'string.empty': 'Page value cannot be empty',
+    }),
+  pageSize: Joi
+    .number()
+    .optional()
+    .min(5)
+    .max(150)
+    .messages({
+      'number.base': 'Page size must be a number',
+      'number.min': 'Page size must be at least 5',
+      'number.max': 'Page size cannot be greater than 150',
+    }),
+}))
+
 export interface ChangeOpponentNameSchema extends JoiValidation.ValidatedRequestSchema {
   [JoiValidation.ContainerTypes.Body]: {
     opponentName: string;
