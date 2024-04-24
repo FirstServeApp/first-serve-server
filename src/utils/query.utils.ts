@@ -12,7 +12,7 @@ const getPaginationDataFromQuery = (query: Query) => {
   }
 }
 
-const getPlayersFromQuery = (query: Query) => {
+const getPlayersFromQuery = (query: Query): string[] => {
   const { players } = query
   if (!players) {
     // throw ApiError.BadRequest('Players array is required')

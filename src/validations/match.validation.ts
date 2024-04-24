@@ -225,7 +225,6 @@ export const validateGetAllMatchesQuery = matchValidator.query(Joi.object({
     .string()
     .optional()
     .messages({
-      'string.empty': 'Players query param cannot be empty',
       'string.base': 'Players must be a string',
     }),
   page: Joi
