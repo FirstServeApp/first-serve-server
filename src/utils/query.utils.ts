@@ -15,7 +15,8 @@ const getPaginationDataFromQuery = (query: Query) => {
 const getPlayersFromQuery = (query: Query) => {
   const { players } = query
   if (!players) {
-    throw ApiError.BadRequest('Players array is required')
+    // throw ApiError.BadRequest('Players array is required')
+    return []
   }
   const playersArr = JSON.parse(decodeURIComponent(String(players)))
 
