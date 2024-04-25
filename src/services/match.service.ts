@@ -89,6 +89,12 @@ const getMatchesCountByUser = async (
   return count
 }
 
+const getAllPlayersByUser = async (userId: Schema.Types.ObjectId) => {
+  const players = await MatchModel.find({ user_id: userId }, { opponentName: true }).distinct('opponentName').exec()
+
+  return players
+}
+
 const getMatchesByUser = async (
   userId: Schema.Types.ObjectId,
   skip: number,
@@ -240,4 +246,5 @@ export {
   getMatchesByPlayers,
   getDetailsByMatch,
   changeOpponentName,
+  getAllPlayersByUser,
 }

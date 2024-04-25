@@ -1,5 +1,5 @@
 import JoiValidation from 'express-joi-validation'
-import { Response, NextFunction } from 'express'
+import { Response, NextFunction, Request } from 'express'
 import {
   createMatch,
   getMatchById,
@@ -10,6 +10,7 @@ import {
   getMatchesByPlayers,
   getDetailsByMatch,
   changeOpponentName,
+  getAllPlayersByUser,
 } from '../services/match.service.js'
 import {
   MatchRequestSchema,
@@ -84,6 +85,22 @@ const getMatchesByUserController = async (
       matches,
       count,
     })
+  } catch (e) {
+    next(e)
+  }
+}
+
+const getAllPlayersByUserController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { _id } = req.user as IUserDto
+
+    const players = await getAllPlayersByUser(_id)
+
+    return res.json(players)
   } catch (e) {
     next(e)
   }
@@ -170,4 +187,5 @@ export {
   getMatchesByPlayersController,
   getMatchDetailsController,
   changeOpponentNameController,
+  getAllPlayersByUserController,
 }

@@ -8,6 +8,7 @@ import {
   getMatchesByPlayersController,
   getMatchDetailsController,
   changeOpponentNameController,
+  getAllPlayersByUserController,
 } from '../controllers/match.controller.js'
 import {
   validateCreateMatchBody,
@@ -24,6 +25,7 @@ const router = Router()
 
 router.post('/create', checkAuth, validateCreateMatchBody, createMatchController)
 router.get('/all', checkAuth, validateGetAllMatchesQuery, getMatchesByUserController)
+router.get('/all/players', checkAuth, getAllPlayersByUserController)
 router.get('/filter/date', checkAuth, validateDateFilterQuery, getMatchesByDateController)
 router.get('/filter/players', checkAuth, validatePlayersFilterQuery, getMatchesByPlayersController)
 router.get('/:id', checkAuth, validateRequestParamId, isAuthor, getMatchController)
