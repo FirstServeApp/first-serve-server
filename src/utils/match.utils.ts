@@ -60,7 +60,7 @@ const getBreakPoints = (games: IGame[], player: 'ME' | 'OPPONENT') => {
         && (index+1 === arr.length ? true : arr[index + 1]?.myScore < item.myScore) && item.server === 'ME') {
         count += 1
       }
-      if (item.myScore >= 40 && item.myScore - item.opponentScore > 20) {
+      if (item.myScore >= 40 && item.myScore > item.opponentScore) {
         total += 1
       }
     } else if (player === 'OPPONENT') {
@@ -73,7 +73,7 @@ const getBreakPoints = (games: IGame[], player: 'ME' | 'OPPONENT') => {
         : arr[index + 1]?.opponentScore < item.opponentScore) && item.server === 'OPPONENT') {
         count += 1
       }
-      if (item.opponentScore >= 40 && item.opponentScore - item.myScore > 20) {
+      if (item.opponentScore >= 40 && item.opponentScore > item.myScore) {
         total += 1
       }
     }
