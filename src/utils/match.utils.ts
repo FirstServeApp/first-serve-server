@@ -375,22 +375,26 @@ export const getSecondServes = (sets: ISet[]) => {
   return {
     all: {
       me: {
-        total: getTotal(games, 'ME'),
+        // total: getTotal(games, 'ME'),
+        total: getHistoryByPlayer(games, 'ME').length,
         count: myServesCount,
       },
       opponent: {
-        total: getTotal(games, 'OPPONENT'),
+        // total: getTotal(games, 'OPPONENT'),
+        total: getHistoryByPlayer(games, 'OPPONENT').length,
         count: opponentServesCount,
       },
     },
     bySet: sets.map((set) => ({
       me: {
-        total: getTotal(set.games, 'ME'),
+        // total: getTotal(set.games, 'ME'),
+        total: getHistoryByPlayer(set.games, 'ME').length,
         count: getHistoryByPlayer(set.games, 'ME')
           .filter((item) => item.serve === serveType && item.type !== 'Double fault').length,
       },
       opponent: {
-        total: getTotal(set.games, 'OPPONENT'),
+        // total: getTotal(set.games, 'OPPONENT'),
+        total: getHistoryByPlayer(set.games, 'OPPONENT').length,
         count: getHistoryByPlayer(set.games, 'OPPONENT')
           .filter((item) => item.serve === serveType && item.type !== 'Double fault').length,
       },
@@ -478,11 +482,13 @@ export const getSecondServeWon = (sets: ISet[]) => {
     .filter((item) => item.serve === serveType && item.server === 'OPPONENT' && item.type !== 'Double fault').length
 
   const getTotal = (gamesArr: IGame[], player: 'ME' | 'OPPONENT'): number => {
-    const secondServes = getHistoryByPlayer(gamesArr, player)
+    // const secondServes = getHistoryByPlayer(gamesArr, player)
+    //   .filter((item) => item.serve === serveType && item.type !== 'Double fault').length
+    // const doubleFaults = getHistoryByPlayer(games, player)
+    //   .filter((item) => item.type === 'Double fault').length
+    // return secondServes + doubleFaults
+    return getHistoryByPlayer(gamesArr, player)
       .filter((item) => item.serve === serveType && item.type !== 'Double fault').length
-    const doubleFaults = getHistoryByPlayer(games, player)
-      .filter((item) => item.type === 'Double fault').length
-    return secondServes + doubleFaults
   }
 
   return {
