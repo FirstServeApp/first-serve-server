@@ -18,8 +18,11 @@ export const generateTokens = async (user: IUser | ISocialUser, session?: any): 
     const refreshSecret = getEnv('JWT_REFRESH_SECRET')
 
     const payload = { ...new UserDto(user) }
-    const accessToken = await jwt.sign(payload, accessSecret, { expiresIn: getEnv('JWT_ACCESS_LIFETIME') || '6h' })
-    const refreshToken = await jwt.sign(payload, refreshSecret, { expiresIn: getEnv('JWT_REFRESH_LIFETIME') || '60d' })
+    const accessToken = await jwt.sign(payload, accessSecret, { expiresIn: getEnv('JWT_ACCESS_LIFETIME') || '7 days' })
+    const refreshToken = await jwt.sign(
+      payload, refreshSecret,
+      { expiresIn: getEnv('JWT_REFRESH_LIFETIME') || '90 days' },
+    )
 
     const tokenData = await TokenModel.findOne({ user_id: user._id })
     if (tokenData) {

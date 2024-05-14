@@ -17,6 +17,6 @@ const OTPSchema = new Schema<IOTP>({
   timestamps: true,
 })
 
-OTPSchema.index({ updatedAt: 1 }, { expireAfterSeconds: 300 }) // expire after 15 minute
+OTPSchema.index({ updatedAt: 1 }, { expireAfterSeconds: 900 }) // expire after 15 minute
 
 export const OTPModel = model<IOTP>('OTP', OTPSchema)

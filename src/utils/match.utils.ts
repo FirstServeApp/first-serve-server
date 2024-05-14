@@ -376,25 +376,25 @@ export const getSecondServes = (sets: ISet[]) => {
     all: {
       me: {
         // total: getTotal(games, 'ME'),
-        total: getHistoryByPlayer(games, 'ME').length,
+        total: getHistoryByPlayer(games, 'ME').filter((item) => item.serve === serveType).length,
         count: myServesCount,
       },
       opponent: {
         // total: getTotal(games, 'OPPONENT'),
-        total: getHistoryByPlayer(games, 'OPPONENT').length,
+        total: getHistoryByPlayer(games, 'OPPONENT').filter((item) => item.serve === serveType).length,
         count: opponentServesCount,
       },
     },
     bySet: sets.map((set) => ({
       me: {
         // total: getTotal(set.games, 'ME'),
-        total: getHistoryByPlayer(set.games, 'ME').length,
+        total: getHistoryByPlayer(set.games, 'ME').filter((item) => item.serve === serveType).length,
         count: getHistoryByPlayer(set.games, 'ME')
           .filter((item) => item.serve === serveType && item.type !== 'Double fault').length,
       },
       opponent: {
         // total: getTotal(set.games, 'OPPONENT'),
-        total: getHistoryByPlayer(set.games, 'OPPONENT').length,
+        total: getHistoryByPlayer(set.games, 'OPPONENT').filter((item) => item.serve === serveType).length,
         count: getHistoryByPlayer(set.games, 'OPPONENT')
           .filter((item) => item.serve === serveType && item.type !== 'Double fault').length,
       },

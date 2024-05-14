@@ -21,7 +21,7 @@ const app: Express = express()
 const PORT: number = Number(process.env.PORT) || 6060
 app.use(morgan('dev'))
 
-app.use(express.json({ limit: '5mb' }))
+app.use(express.json({ limit: '10mb' }))
 app.use(helmet())
 app.use(cookieParser())
 app.use(cors())
