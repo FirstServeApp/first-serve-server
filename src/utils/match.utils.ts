@@ -44,6 +44,43 @@ const getHistoryByPlayer = (games: IGame[], player: 'ME' | 'OPPONENT') => {
 //   return { total, count }
 // }
 
+// const getBreakPoints = (games: IGame[], player: 'ME' | 'OPPONENT') => {
+//   let total = 0
+//   let count = 0
+
+//   const filteredGames = games.filter((game) => game.server !== player)
+//   filteredGames.flatMap((game) => game.history).map((item, index, arr) => {
+//     if (player === 'ME') {
+//       // if (item.myScore > item.opponentScore && item.myScore >= 40
+//       //   && arr[index + 1]?.server === 'ME' && arr[index + 1]?.myScore > item.myScore) {
+//       //   total += 1
+//       // }
+
+//       if (item.myScore - item.opponentScore > 20
+//         && (index+1 === arr.length ? true : arr[index + 1]?.myScore < item.myScore) && item.server === 'ME') {
+//         count += 1
+//       }
+//       if (item.myScore >= 40 && item.myScore > item.opponentScore) {
+//         total += 1
+//       }
+//     } else if (player === 'OPPONENT') {
+//       // if (item.opponentScore > item.myScore && item.opponentScore >= 40
+//       //   && arr[index + 1]?.server === 'OPPONENT' && arr[index + 1]?.opponentScore > item.opponentScore) {
+//       //   total += 1
+//       // }
+
+//       if (item.opponentScore - item.myScore > 20 && (index + 1 === arr.length ? true
+//         : arr[index + 1]?.opponentScore < item.opponentScore) && item.server === 'OPPONENT') {
+//         count += 1
+//       }
+//       if (item.opponentScore >= 40 && item.opponentScore > item.myScore) {
+//         total += 1
+//       }
+//     }
+//   })
+
+//   return { total, count }
+// }
 const getBreakPoints = (games: IGame[], player: 'ME' | 'OPPONENT') => {
   let total = 0
   let count = 0
@@ -51,30 +88,22 @@ const getBreakPoints = (games: IGame[], player: 'ME' | 'OPPONENT') => {
   const filteredGames = games.filter((game) => game.server !== player)
   filteredGames.flatMap((game) => game.history).map((item, index, arr) => {
     if (player === 'ME') {
-      // if (item.myScore > item.opponentScore && item.myScore >= 40
-      //   && arr[index + 1]?.server === 'ME' && arr[index + 1]?.myScore > item.myScore) {
-      //   total += 1
-      // }
-
-      if (item.myScore - item.opponentScore > 20
-        && (index+1 === arr.length ? true : arr[index + 1]?.myScore < item.myScore) && item.server === 'ME') {
-        count += 1
-      }
-      if (item.myScore >= 40 && item.myScore > item.opponentScore) {
+      const score = `${item.myScore}-${item.opponentScore}`
+      if (score === '40-0' || score === '40-15' || score === '40-30' || score === '55-40') {
         total += 1
+        const myNextScore = arr[index + 1]?.myScore
+        if (myNextScore > item.myScore) {
+          count += 1
+        }
       }
     } else if (player === 'OPPONENT') {
-      // if (item.opponentScore > item.myScore && item.opponentScore >= 40
-      //   && arr[index + 1]?.server === 'OPPONENT' && arr[index + 1]?.opponentScore > item.opponentScore) {
-      //   total += 1
-      // }
-
-      if (item.opponentScore - item.myScore > 20 && (index + 1 === arr.length ? true
-        : arr[index + 1]?.opponentScore < item.opponentScore) && item.server === 'OPPONENT') {
-        count += 1
-      }
-      if (item.opponentScore >= 40 && item.opponentScore > item.myScore) {
+      const score = `${item.opponentScore}-${item.myScore}`
+      if (score === '40-0' || score === '40-15' || score === '40-30' || score === '55-40') {
         total += 1
+        const opponentNextScore = arr[index + 1]?.opponentScore
+        if (opponentNextScore > item.opponentScore) {
+          count += 1
+        }
       }
     }
   })
